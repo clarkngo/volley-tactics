@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volley Tactics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="canvas"></canvas>
+
+      <!-- Minimal top-right utilities -->
+      <div class="util-bar">
+        <button id="btn-save" class="util-btn" title="Save">Save</button>
+        <button id="btn-load" class="util-btn" title="Load">Load</button>
+        <button id="btn-share" class="util-btn accent" title="Share">Share</button>
+        <input type="file" id="file-input" accept=".json" hidden />
+      </div>
+
+      <!-- Camera presets (compact) -->
+      <div class="camera-presets">
+        <button class="cam-btn" data-preset="top" title="Top">Top</button>
+        <button class="cam-btn active" data-preset="iso" title="Coach">Coach</button>
+        <button class="cam-btn" data-preset="server" title="Server">Server</button>
+        <button class="cam-btn" data-preset="free" title="Free">Free</button>
+      </div>
+
+      <!-- Side panel -->
+      <aside id="side-panel" class="side-panel hidden">
+        <h3 id="panel-title">Selected</h3>
+        <div id="panel-player-section">
+          <div class="panel-section">
+            <label>Team</label>
+            <span id="panel-team" class="badge"></span>
+          </div>
+          <div class="panel-section">
+            <label for="panel-action">On ball contact</label>
+            <select id="panel-action" class="select full">
+              <option value="setter">Set</option>
+              <option value="attacker">Attack</option>
+              <option value="receiver">Pass</option>
+              <option value="blocker">Block</option>
+            </select>
+          </div>
+          <div class="panel-section">
+            <label>Position</label>
+            <div class="coord-row">
+              <span>X: <input type="number" id="panel-x" step="0.1" class="coord-input" /></span>
+              <span>Z: <input type="number" id="panel-z" step="0.1" class="coord-input" /></span>
+            </div>
+          </div>
+        </div>
+        <div id="panel-ball-section" class="hidden">
+          <div class="panel-section">
+            <label for="panel-ball-label">Label</label>
+            <input type="text" id="panel-ball-label" class="select full" />
+          </div>
+          <div class="panel-section">
+            <label for="panel-ball-color">Color</label>
+            <input type="color" id="panel-ball-color" class="color-input full" />
+          </div>
+        </div>
+        <button id="btn-delete" class="btn-danger full">Delete</button>
+      </aside>
+
+      <!-- Floating pill dock (reference-style) -->
+      <footer class="dock">
+        <div class="dock-section">
+          <span class="dock-label">On contact</span>
+          <div class="dock-pills">
+            <button class="pill action-pill" data-action="setter">Set</button>
+            <button class="pill action-pill" data-action="attacker">Attack</button>
+            <button class="pill action-pill active" data-action="receiver">Pass</button>
+            <button class="pill action-pill" data-action="blocker">Block</button>
+          </div>
+        </div>
+
+        <div class="dock-section">
+          <span class="dock-label">Add</span>
+          <div class="dock-pills">
+            <button id="btn-add-team-a" class="pill team-a-pill">+ Blue</button>
+            <button id="btn-add-team-b" class="pill team-b-pill">+ Red</button>
+            <button id="btn-add-ball" class="pill ball-pill">+ Ball</button>
+            <button id="btn-keyframe" class="pill">◆ Keyframe</button>
+          </div>
+        </div>
+
+        <div class="dock-section">
+          <span class="dock-label">Actions</span>
+          <div class="dock-pills">
+            <select id="easing-select" class="pill-select" title="Easing">
+              <option value="linear">Linear</option>
+              <option value="power2.inOut" selected>Smooth</option>
+              <option value="power3.out">Decel</option>
+              <option value="back.inOut">Overshoot</option>
+              <option value="elastic.out">Elastic</option>
+              <option value="bounce.out">Bounce</option>
+            </select>
+            <label class="pill duration-pill">
+              <input type="number" id="duration-input" value="10" min="1" max="60" step="1" class="dur-input" />s
+            </label>
+          </div>
+        </div>
+
+        <div class="dock-playback">
+          <button id="btn-play" class="play-btn">▶</button>
+          <div class="scrubber-wrap">
+            <input type="range" id="scrubber" class="scrubber" min="0" max="1000" value="0" />
+            <div id="keyframe-dots" class="keyframe-dots"></div>
+          </div>
+          <span id="time-display" class="time-display">0.0s</span>
+          <div class="speed-toggles">
+            <button class="speed-btn" data-speed="0.5">0.5×</button>
+            <button class="speed-btn active" data-speed="1">1×</button>
+            <button class="speed-btn" data-speed="1.5">1.5×</button>
+          </div>
+        </div>
+      </footer>
+
+      <div id="toast" class="toast hidden"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
