@@ -1,0 +1,327 @@
+/* Reference-style glassmorphic pill dock UI */
+
+:root {
+  --bg: #000000;
+  --dock-bg: rgba(18, 22, 32, 0.82);
+  --dock-border: rgba(255, 255, 255, 0.1);
+  --text: #e8edf5;
+  --muted: #7a8499;
+  --cyan: #5ec8e8;
+  --cyan-glow: rgba(94, 200, 232, 0.35);
+  --team-a: #6ec8ff;
+  --team-b: #ff6b7a;
+  --radius: 20px;
+  --font: 'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app { position: relative; width: 100%; height: 100%; }
+#canvas { display: block; width: 100%; height: 100%; }
+
+/* ── Utility bar (top-right) ─────────────────────────────────── */
+
+.util-bar {
+  position: absolute; top: 14px; right: 14px; z-index: 10;
+  display: flex; gap: 6px;
+}
+
+.util-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--dock-border);
+  border-radius: 14px;
+  background: var(--dock-bg);
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  cursor: pointer;
+  backdrop-filter: blur(16px);
+  transition: all 0.15s;
+}
+.util-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+.util-btn.accent { color: var(--cyan); border-color: rgba(94,200,232,0.3); }
+
+/* ── Camera presets ──────────────────────────────────────────── */
+
+.camera-presets {
+  position: absolute; top: 14px; left: 14px; z-index: 10;
+  display: flex; gap: 4px;
+}
+
+.cam-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--dock-border);
+  border-radius: 12px;
+  background: var(--dock-bg);
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.68rem;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.15s;
+}
+.cam-btn:hover { color: var(--text); }
+.cam-btn.active { color: var(--cyan); border-color: rgba(94,200,232,0.4); }
+
+/* ── Floating pill dock ──────────────────────────────────────── */
+
+.dock {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 20px;
+  min-width: 520px;
+  max-width: 90vw;
+  background: var(--dock-bg);
+  border: 1px solid var(--dock-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.dock-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dock-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  min-width: 48px;
+  flex-shrink: 0;
+}
+
+.dock-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.pill {
+  padding: 5px 14px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.pill:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.pill.active { background: rgba(94,200,232,0.15); color: var(--cyan); border-color: rgba(94,200,232,0.35); }
+
+.team-a-pill { color: var(--team-a); border-color: rgba(110,200,255,0.25); }
+.team-b-pill { color: var(--team-b); border-color: rgba(255,107,122,0.25); }
+.ball-pill { color: var(--cyan); }
+
+.pill-select {
+  padding: 5px 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.duration-pill {
+  display: flex; align-items: center; gap: 2px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.dur-input {
+  width: 28px; background: transparent; border: none;
+  color: var(--text); font-family: var(--font); font-size: 0.72rem;
+  text-align: right;
+}
+
+/* ── Playback row ────────────────────────────────────────────── */
+
+.dock-playback {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.play-btn {
+  width: 36px; height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--cyan);
+  color: #000;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 16px var(--cyan-glow);
+  transition: box-shadow 0.15s;
+}
+.play-btn:hover { box-shadow: 0 0 24px var(--cyan-glow); }
+
+.scrubber-wrap {
+  flex: 1;
+  position: relative;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.scrubber {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.12);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+.scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan-glow);
+  cursor: grab;
+}
+
+.keyframe-dots {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 6px;
+  pointer-events: none;
+  z-index: 1;
+}
+.kf-dot {
+  position: absolute;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  opacity: 0.5;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.time-display {
+  font-size: 0.72rem;
+  color: var(--muted);
+  min-width: 36px;
+  font-variant-numeric: tabular-nums;
+}
+
+.speed-toggles { display: flex; gap: 3px; }
+.speed-btn {
+  padding: 3px 7px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+.speed-btn.active { color: var(--cyan); border-color: rgba(94,200,232,0.3); background: rgba(94,200,232,0.1); }
+
+/* ── Side panel ──────────────────────────────────────────────── */
+
+.side-panel {
+  position: absolute; top: 50px; right: 14px; z-index: 10;
+  width: 200px; padding: 14px;
+  background: var(--dock-bg);
+  border: 1px solid var(--dock-border);
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+}
+.side-panel.hidden { display: none; }
+.side-panel h3 { font-size: 0.82rem; margin-bottom: 10px; }
+.panel-section { margin-bottom: 10px; }
+.panel-section label {
+  display: block; font-size: 0.62rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--muted); margin-bottom: 3px;
+}
+
+.badge {
+  display: inline-block; padding: 2px 10px;
+  border-radius: 10px; font-size: 0.72rem; font-weight: 600;
+}
+.badge.team-a { background: rgba(110,200,255,0.15); color: var(--team-a); }
+.badge.team-b { background: rgba(255,107,122,0.15); color: var(--team-b); }
+
+.select, .coord-input, .color-input {
+  padding: 5px 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.75rem;
+}
+.select.full, .color-input.full { width: 100%; }
+.coord-row { display: flex; gap: 6px; font-size: 0.75rem; }
+.coord-input { width: 58px; }
+
+.btn-danger {
+  width: 100%; padding: 6px;
+  border: 1px solid rgba(255,107,122,0.3);
+  border-radius: 10px;
+  background: rgba(255,107,122,0.08);
+  color: var(--team-b);
+  font-family: var(--font);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.btn-danger.full { width: 100%; }
+
+.hidden { display: none !important; }
+
+/* ── Toast ───────────────────────────────────────────────────── */
+
+.toast {
+  position: absolute; bottom: 140px; left: 50%;
+  transform: translateX(-50%); z-index: 20;
+  padding: 8px 20px; border-radius: 12px;
+  background: var(--dock-bg);
+  border: 1px solid rgba(94,200,232,0.3);
+  color: var(--cyan);
+  font-size: 0.8rem;
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.toast.hidden { opacity: 0; }
+
+@media (max-width: 700px) {
+  .dock { min-width: unset; width: 94vw; padding: 10px 14px; }
+  .dock-section { flex-wrap: wrap; }
+}
